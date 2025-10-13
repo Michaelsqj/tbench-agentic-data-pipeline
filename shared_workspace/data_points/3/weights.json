@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "test_script_exists",
+      "weight": 0.2
+    },
+    {
+      "name": "test_run_generates_report_and_removes_list",
+      "weight": 0.55
+    },
+    {
+      "name": "test_missing_identifier_fails",
+      "weight": 0.25
+    }
+  ]
+}

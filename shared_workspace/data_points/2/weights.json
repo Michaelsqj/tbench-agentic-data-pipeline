@@ -1,0 +1,16 @@
+{
+  "tests": [
+    {
+      "name": "test_cli_exists",
+      "weight": 0.25
+    },
+    {
+      "name": "test_report_lists_kept_back_packages",
+      "weight": 0.5
+    },
+    {
+      "name": "test_missing_log_fails",
+      "weight": 0.25
+    }
+  ]
+}

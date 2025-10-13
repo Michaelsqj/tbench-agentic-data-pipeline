@@ -1,0 +1,7 @@
+Reading package lists... Done
+Building dependency tree
+Reading state information... Done
+Calculating upgrade... Done
+The following packages have been kept back:
+  gimp gimp-data libgegl-0.0-0 libgimp2.0
+0 upgraded, 0 newly installed, 0 to remove and 4 not upgraded.
