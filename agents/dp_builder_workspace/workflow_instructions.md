@@ -10,7 +10,7 @@ This pipeline uses a **shared workspace** system where both DP Builder and Revie
 
 2. **Shared Workspace** (where you create ALL your files):
    ```bash
-   shared_workspace/data_points/{task_id}/
+   shared_workspace/data_points/draft_{task_id}/
    ├── draft_spec.md      # Already created by Idea Agent
    ├── prompt.md          # Create these files directly here
    ├── dockerfile         
@@ -22,17 +22,16 @@ This pipeline uses a **shared workspace** system where both DP Builder and Revie
    ```
 
 **Key Points:**
-- The Idea Agent's draft specification is already at `shared_workspace/data_points/{task_id}/draft_spec.md`
-- Create your implementation files DIRECTLY in the same `shared_workspace/data_points/{task_id}/` directory
+- The Idea Agent's draft specification is already at `shared_workspace/data_points/draft_{task_id}/draft_spec.md`
+- Create your implementation files DIRECTLY in the same `shared_workspace/data_points/draft_{task_id}/` directory
 - The Review Agent will edit your files in place (no copying needed)
-- Use `patch_additional_files.py --mode sync` to sync file changes to CSV
 
 ## Context
 
 You are the DP Builder agent in a two-stage data generation pipeline. Your role is to take draft datapoint specifications from the Idea Agent and build complete, validated training datapoints for terminal_bench.
 
 ## Your Position in the Pipeline
-- **Stage 1 (Idea Agent)**: Analyzes eval DPs → Generates creative ideas → Creates draft DP specifications
+- **Stage 1 (Idea Agent)**: Analyze web-scraped Q&A pairs → Generate refined and verifiable problem and test ideas → Create draft DP specifications
 - **Stage 2 (Your Role)**: Takes draft specs → Builds full datapoints → Validates → Finalizes or rejects
 
 ## Purpose
@@ -60,124 +59,19 @@ You create high-quality training datapoints that will be used in RL training run
 The main CLI interface for interacting with the task management system:
 
 ```bash
-# Get your next draft task to build
-python data_pipeline.py next --task-type draft_dp
+# Available Tools
 
-# Read the draft specification from shared workspace
-cat shared_workspace/data_points/draft_001_a/draft_spec.md
+## get_data.py
+The interface to load dataset and display the ith web-scraped data with Q&A pairs.
 
-# Mark a task as complete (with status)
-python data_pipeline.py complete draft_001_a --status completed
-python data_pipeline.py complete draft_001_a --status rejected
+`title`, `question_text`, `answer_text` are the main components of each data in dataset.
 
-# Check status of all tasks
-python data_pipeline.py status
-
-# Get detailed info about a task
-python data_pipeline.py info draft_001_a
-```
-
-## create_dp.py
-Creates a new datapoint using the shared workspace (automatically creates staging/datapoints.csv if it doesn't exist):
+`task_id` is int number starting from $0$ to the length of dataset.
 
 ```bash
-# Create a new DP from files in shared workspace
-# This will copy your files to the workspace and sync additional files to CSV
-python agents/dp_builder_workspace/create_dp.py \
-    --task-id draft_001_a \
-    --prompt-file shared_workspace/data_points/draft_001_a/prompt.md \
-    --dockerfile-file shared_workspace/data_points/draft_001_a/dockerfile \
-    --tests-file shared_workspace/data_points/draft_001_a/tests.py \
-    --weights-file shared_workspace/data_points/draft_001_a/weights.json \
-    --additional-files-dir shared_workspace/data_points/draft_001_a/files/ \
-    --difficulty medium
+# Get data i from state/dataset.json
+python get_data.py -i <task_id>
 ```
-
-**Note**: The create_dp.py script:
-- Creates the workspace structure at `shared_workspace/data_points/{task_id}/` if it doesn't exist
-- Copies your files to the workspace (keeping them there for the Review Agent)
-- Automatically syncs additional files to the CSV
-- Creates the staging CSV entry
-
-## shared_tools/validate_datapoint.py
-Validates a datapoint in the staging CSV:
-
-```bash
-# Validate a staged datapoint (uses staging CSV by default)
-python shared_tools/validate_datapoint.py \
-    --task-id draft_001_a \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-    --verbose
-
-# Returns:
-# Exit code 0: All validations pass
-# Exit code 1: Validation failures (with detailed output)
-```
-
-## patch_dp.py (from shared_tools)
-Updates specific columns of a datapoint in staging (NOT for additional files):
-
-```bash
-# Update a single column
-python shared_tools/patch_dp.py \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-    --task-id draft_001_a \
-    --column prompt \
-    --file shared_workspace/data_points/draft_001_a/prompt.md
-
-# Update multiple columns
-python shared_tools/patch_dp.py \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-    --task-id draft_001_a \
-    --column tests \
-    --file shared_workspace/data_points/draft_001_a/tests.py \
-    --column weights \
-    --file shared_workspace/data_points/draft_001_a/weights.json
-```
-
-**Note**: patch_dp.py NO LONGER supports additional_files. Use patch_additional_files.py instead.
-
-## patch_additional_files.py (from shared_tools)
-Manages additional files in the shared workspace:
-
-```bash
-# Sync all files from workspace to CSV (most common operation)
-python shared_tools/patch_additional_files.py \
-    --task-id draft_001_a \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-    --mode sync
-
-# Update/add a single file
-python shared_tools/patch_additional_files.py \
-    --task-id draft_001_a \
-    --file /tmp/fixed_config.json \
-    --name config.json \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv
-
-# Remove a file
-python shared_tools/patch_additional_files.py \
-    --task-id draft_001_a \
-    --mode remove \
-    --name old_script.py \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv
-```
-
-**Note**: This tool automatically works with the shared workspace at `shared_workspace/data_points/{task_id}/files/`
-
-## add_dp_to_review.py
-Moves a validated datapoint from staging to the review dataset, completes the draft task, and creates a review task:
-
-```bash
-# Add to review, complete draft task, and create review task
-python agents/dp_builder_workspace/add_dp_to_review.py --task-id draft_001_a
-```
-
-This will:
-1. Add the datapoint to review/datapoints_for_review.csv
-2. Remove it from staging/datapoints.csv
-3. Create an artifact in artifacts/final_dps/
-4. **Complete the draft_dp task** (marks it as completed)
-5. **Create a new review_dp task** for the Review Agent to process
 
 # Using Additional Files with Shared Workspace (REQUIRED)
 
@@ -193,7 +87,7 @@ The data pipeline uses a shared workspace approach where both DP Builder and Rev
 
 When you create a datapoint, files are stored in a shared workspace at:
 ```
-shared_workspace/data_points/{task_id}/
+shared_workspace/data_points/draft_{task_id}/
 ├── prompt.md          # Your prompt file
 ├── dockerfile         # Your Dockerfile
 ├── tests.py          # Your test file
@@ -209,7 +103,7 @@ shared_workspace/data_points/{task_id}/
 ## Creating and Managing Additional Files
 
 1. **Files are automatically managed** when you run create_dp.py:
-   - The workspace directory is created at `shared_workspace/data_points/{task_id}/`
+   - The workspace directory is created at `shared_workspace/data_points/draft_{task_id}/`
    - Your files are copied to the workspace
    - Additional files go in the `files/` subdirectory
    - Changes are synced to the CSV automatically
@@ -256,19 +150,16 @@ Follow these steps for each draft datapoint you process:
 
 ## Step 1: Get Next Draft Task
 First, make sure you're in the correct directory:
-```bash
-cd /Users/danaustin/Documents/Projects/terminal_bench_training/workings/ds/data_generation_pipeline
-```
 
 Then get your next task:
 ```bash
-python data_pipeline.py next --task-type draft_dp
+python get_data.py -i <task_id>
 ```
 
 ## Step 2: Load and Analyze Draft Specification
 ```bash
 # Read the draft specification from shared workspace
-cat shared_workspace/data_points/draft_001_a/draft_spec.md
+cat shared_workspace/data_points/draft_{task_id}/draft_spec.md
 ```
 
 Read and analyze the draft specification, understanding:
@@ -364,15 +255,15 @@ Create the component files directly in the shared workspace. **This is where you
 
 ```bash
 # First, manually create the shared workspace structure for this task
-mkdir -p shared_workspace/data_points/draft_001_a/files
+mkdir -p shared_workspace/data_points/draft_{task_id}/files
 ```
 
 Now create your files directly in this workspace:
-- `shared_workspace/data_points/draft_001_a/prompt.md`
-- `shared_workspace/data_points/draft_001_a/dockerfile`
-- `shared_workspace/data_points/draft_001_a/tests.py`
-- `shared_workspace/data_points/draft_001_a/weights.json`
-- Any additional files in: `shared_workspace/data_points/draft_001_a/files/`
+- `shared_workspace/data_points/draft_{task_id}/prompt.md`
+- `shared_workspace/data_points/draft_{task_id}/dockerfile`
+- `shared_workspace/data_points/draft_{task_id}/tests.py`
+- `shared_workspace/data_points/draft_{task_id}/weights.json`
+- Any additional files in: `shared_workspace/data_points/draft_{task_id}/files/`
 
 Key principles when building:
 - If the draft has 5+ complex tests, simplify to 1-2 clear ones
@@ -478,169 +369,6 @@ Create `shared_workspace/data_points/draft_001_a/weights.json`:
     "test_function_3": 0.3
 }
 ```
-
-## Step 6: Create Datapoint in Staging
-```bash
-# The create_dp.py command will copy your files from the shared workspace to staging
-# and automatically sync additional files to the CSV
-# Use the difficulty level extracted from the draft specification
-python agents/dp_builder_workspace/create_dp.py \
-    --task-id draft_001_a \
-    --prompt-file shared_workspace/data_points/draft_001_a/prompt.md \
-    --dockerfile-file shared_workspace/data_points/draft_001_a/dockerfile \
-    --tests-file shared_workspace/data_points/draft_001_a/tests.py \
-    --weights-file shared_workspace/data_points/draft_001_a/weights.json \
-    --additional-files-dir shared_workspace/data_points/draft_001_a/files/ \
-    --difficulty medium  # Use the difficulty from the draft (easy/medium/hard/extremely_hard)
-```
-
-Note: This will:
-- Create the CSV entry in staging/datapoints.csv
-- Keep your files in the shared workspace
-- Automatically sync the additional files from the workspace to the CSV
-
-## Step 7: Validate the Datapoint
-```bash
-python shared_tools/validate_datapoint.py \
-    --task-id draft_001_a \
-    --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-    --verbose
-```
-
-### Expected Validation Behavior
-**IMPORTANT**: During validation, your tests WILL and SHOULD fail! This is correct behavior because:
-1. The validation process builds your Docker environment
-2. It runs your tests in the initial state (before any agent work)
-3. Your tests should fail because they're checking for work that hasn't been done yet
-4. If your tests PASS during validation, it means they're not actually testing the agent's task
-
-**What validation is checking:**
-- ✅ Dockerfile builds successfully
-- ✅ Test file has valid Python syntax
-- ✅ Test functions can be imported
-- ✅ **pytest can discover your tests** - if pytest finds 0 tests, validation will fail!
-- ✅ Test weights are valid and sum to 1.0
-- ✅ Tests FAIL appropriately (indicating they're testing the right things)
-
-### Common Validation Failures and Fixes
-
-#### Dockerfile Build Errors
-- Missing dependencies: Add to apt-get/pip install
-- Syntax errors: Fix Dockerfile syntax
-- Build timeout: Optimize installation steps
-
-#### Test Import Errors
-- Module-level imports of agent files: Move to subprocess calls
-- Missing standard libraries: Add to Dockerfile
-
-#### Test Weight Issues
-- Weights don't sum to 1.0: Recalculate
-- Test names don't match: Update weights.json
-- Missing test in weights: Add all test functions
-
-#### Test Execution Failures
-- Tests fail on initial state: This is expected! Tests should fail before agent acts
-- Import errors during test run: Fix test structure
-
-#### No Tests Discovered (COMMON ERROR!)
-If validation fails with "No tests failed - at least one test must fail for validation (discovered 0 tests)":
-- **Your test file is NOT pytest-compatible**
-- Check that all test functions are named `test_*` (not `Test_*` or `check_*` or anything else)
-- Ensure test functions are at module level (not nested inside other functions or classes)
-- Verify the file has valid Python syntax - try running `python -m py_compile tests.py`
-- Make sure you have actual test functions, not just helper functions
-- Example of what pytest WON'T discover:
-  ```python
-  # BAD - pytest won't find these:
-  def check_output():  # Wrong name
-      assert True
-  
-  def TestSomething():  # Wrong capitalization
-      assert True
-  
-  if __name__ == "__main__":
-      def test_inside_main():  # Not at module level
-          assert True
-  ```
-
-## Step 8: Iterative Refinement
-
-If validation fails:
-
-1. **Analyze the errors** carefully
-2. **Modify the problematic component directly in the shared workspace**:
-   ```bash
-   # Edit the file directly in the shared workspace
-   # (using your file editing tools)
-   # For example, to fix tests:
-   # Edit: shared_workspace/data_points/draft_001_a/tests.py
-   
-   # Then sync changes back to CSV
-   python shared_tools/patch_additional_files.py \
-       --task-id draft_001_a \
-       --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-       --mode sync
-   
-   # OR if you only changed core files (prompt, dockerfile, tests, weights):
-   python shared_tools/patch_dp.py \
-       --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-       --task-id draft_001_a \
-       --column tests \
-       --file shared_workspace/data_points/draft_001_a/tests.py
-   ```
-3. **Re-validate**:
-   ```bash
-   python shared_tools/validate_datapoint.py \
-       --task-id draft_001_a \
-       --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
-       --verbose
-   ```
-4. **Repeat until passing or maximum attempts reached**
-
-### Maximum Attempts
-After 5-7 failed validation attempts, consider marking as unfixable:
-```bash
-# Create rejection reason with detailed explanation
-echo "{\"rejection_reason\": \"Unfixable after multiple attempts: [Brief explanation of persistent issues]\", \"attempts\": 7}" > shared_workspace/data_points/draft_001_a/rejection.json
-
-# Complete the task as rejected
-python data_pipeline.py complete draft_001_a --status rejected --artifact shared_workspace/data_points/draft_001_a/rejection.json
-```
-
-## Step 9: Final Quality Check
-
-Before adding to review, ensure:
-- ✓ Prompt is clear and realistic (1-3 sentences, dev style)
-- ✓ Dockerfile creates proper environment (t-bench images, no hint comments)
-- ✓ Tests are simple and clear (1-2 ideal, max 4)
-- ✓ Weights reflect task structure
-- ✓ All components work together cohesively
-- ✓ Task genuinely tests the intended skills
-- ✓ You've improved upon the draft, not just copied it
-
-## Step 10: Add to Review Dataset and Complete Task
-```bash
-python agents/dp_builder_workspace/add_dp_to_review.py --task-id draft_001_a
-```
-
-This command will:
-- Move the datapoint from staging to review
-- **Automatically complete the current draft_dp task**
-- Create a new `review_dp` task for the Review Agent
-
-**Note:** You do NOT need to manually complete the task - it's done automatically!
-
-# CRITICAL: Understanding Test Behavior
-
-## Tests MUST Fail Initially
-**THIS IS THE MOST IMPORTANT CONCEPT**: Your tests should be written to verify the END STATE after the agent completes the task. This means:
-
-- ✅ **CORRECT**: Tests fail during validation because the agent hasn't done the work yet
-- ✅ **CORRECT**: Tests pass only AFTER the agent successfully completes the required task
-- ❌ **WRONG**: Tests pass during validation (means they're not actually testing the task)
-- ❌ **WRONG**: Tests that check initial state rather than final state
-
-### Example Scenarios
 
 **Good Test (fails initially, passes after agent work):**
 ```python

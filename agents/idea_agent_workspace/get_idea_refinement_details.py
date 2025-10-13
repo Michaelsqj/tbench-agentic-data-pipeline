@@ -9,11 +9,11 @@ REFINEMENT_GUIDELINES = """# Idea Refinement Guidelines
 
 ## Selection Criteria
 
-When refining your brainstormed ideas down to the final n selections, evaluate each idea against these criteria:
+When refining the idea for training data, evaluate each idea against these criteria:
 
 ### 1. Training Value (Weight: 40%)
 - **Unique Learning Opportunity**: Does this task teach something distinct from other selected tasks?
-- **Skill Coverage**: Does it exercise the core capabilities identified in the seed DP analysis?
+- **Skill Coverage**: Does it exercise the core capabilities identified in the dataset analysis?
 - **Generalization Potential**: Will solving this help with similar real-world problems?
 - **Edge Case Exposure**: Does it reveal important edge cases or failure modes?
 
@@ -34,24 +34,7 @@ When refining your brainstormed ideas down to the final n selections, evaluate e
 - **Practical Constraints**: Are the constraints realistic (not artificial)?
 - **Business Context**: Does the scenario make sense in a professional setting?
 
-## Selection Process
-
-1. **Score Each Idea**: Rate each brainstormed idea on the criteria above (1-5 scale)
-2. **Check Distribution**: Ensure your final selection has:
-   - At least 2 different difficulty levels
-   - Multiple tech stacks or variations
-   - Different problem types (not all debugging, not all building)
-   
-3. **Avoid Clustering**: Don't select multiple ideas that are too similar:
-   - Same tech stack + same problem type = too similar
-   - Minor variations of the same task = too similar
-   
-4. **Prioritize Learning Value**: When in doubt, choose the task that:
-   - Tests the core capability in the most different context
-   - Exposes the model to new patterns or approaches
-   - Has clear but challenging success criteria
-
-## Red Flags to Avoid
+## Selection criteria
 
 - **Incremental Variations**: "Do the same thing but with logging" ❌
 - **Surface-Level Changes**: "Same bug but different variable names" ❌
@@ -61,13 +44,10 @@ When refining your brainstormed ideas down to the final n selections, evaluate e
 
 ## Final Checklist
 
-Before finalizing your n selections:
-- [ ] Each task tests the core capabilities from the seed DP
-- [ ] No two tasks are too similar (different contexts/approaches)
-- [ ] Difficulty levels are well distributed
-- [ ] All tasks have clear, verifiable success criteria
+Before finalizing your idea:
+- [ ] Each task tests a core capability
+- [ ] Each task have clear, verifiable success criteria
 - [ ] Each task can realistically be completed in <50 turns
-- [ ] The set as a whole provides diverse training value
 """
 
 def main():
