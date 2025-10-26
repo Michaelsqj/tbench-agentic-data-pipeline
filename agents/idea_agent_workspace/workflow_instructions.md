@@ -20,20 +20,6 @@ The datapoints you help create will be used in RL training runs for an AI agent 
 
 # Available Tools
 
-## get_data.py
-The interface to load dataset and display the ith web-scraped data with Q&A pairs.
-
-`title`, `question_text`, `answer_text` are the main components of each data in dataset.
-
-`task_id` is int number starting from $0$ to the length of dataset.
-
-```bash
-# Get data i from state/dataset.json
-python get_data.py -i <task_id>
-```
-
-This tool requires no arguments and returns refinement criteria to help you refine the data.
-
 # Workflow
 
 Follow these steps for each seed datapoint you process:
@@ -41,7 +27,7 @@ Follow these steps for each seed datapoint you process:
 ## Step 1: Get a data <i> from the dataset 
 ```bash
 # Get a data <i> from the raw web-scraped dataset 
-python get_data.py -i <task_id>
+cat shared_workspace/data_points/task_{i:03d}/raw_data.txt
 ```
 
 ## Step 2: Deep Analysis of data
@@ -141,10 +127,10 @@ Example Testing Descriptions:
 It is vital here that you include everything the next agent will need because the builder agent won't have access to any of your reasoning, any other od the dp specifications, or the original data point. So it will only see the spec, and therefore it is vital you include everything it is important for the builder to know, whilst not being prescriptive.
 
 ### Creating Draft Tasks in Shared Workspace
-For each draft <task_id>:
+For each draft i:
 ```bash
 # 1. Create the shared workspace directory structure
-mkdir -p shared_workspace/data_points/draft_<task_id>
+mkdir -p shared_workspace/data_points/task_{i:03d}
 
 # 2. Write the draft specification directly to the shared workspace
 # Create the draft specification as draft_spec.md in the shared workspace
@@ -153,7 +139,7 @@ mkdir -p shared_workspace/data_points/draft_<task_id>
 Example of writing the draft file:
 ```python
 # Writing to shared workspace
-with open("shared_workspace/data_points/draft_<task_id>/draft_spec.md", "w") as f:
+with open("shared_workspace/data_points/task_{i:03d}/draft_spec.md", "w") as f:
     f.write("""Task: Create a multi-tenant API rate limiter
 Instructions: Build a rate limiting system that tracks and enforces API usage limits across multiple tenants...
 Environment Setup: Python environment with Redis for rate limit storage...
@@ -173,7 +159,7 @@ answer_text: <original answer_text from the data in dataset>
 - **Preserve Core Testing Focus**: All ideas must test the same fundamental capabilities as the seed
 - **Think Like a Trainer**: Each DP should teach the model something valuable
 - **Avoid Similarity**: Never create tasks too similar to the eval DP or each other. Never duplicate the eval DP exactly or be extremely close to it.
-- **Use Shared Workspace**: All draft specifications go directly to `shared_workspace/data_points/{task_id}/`
+- **Use Shared Workspace**: All draft specifications go directly to `shared_workspace/data_points/task_{i:03d}/`
 
 # Constraints
 
@@ -250,18 +236,20 @@ Good Idea: "Debug a race condition in a Go microservice message queue consumer"
 Your draft specifications are created directly in the shared workspace:
 ```
 shared_workspace/data_points/
-└── draft_001/                    # Create draft here
+└── task_001/                    # Create draft here
     └── draft_spec.md               # Your draft specification
-└── draft_002/                    
-    └── draft_spec.md               
+    └── raw_data.txt               # Raw data scraped from online sources
+└── task_002/                    
+    └── draft_spec.md       
+    └── raw_data.txt          
 ```
 
 **Important**: 
-- Create draft specifications directly in `shared_workspace/data_points/data_points<task_id>/`
+- Create draft specifications directly in `shared_workspace/data_points/data_points/task_{i:03d}/`
 - Name the file `draft_spec.md` so the DP Builder Agent knows where to find it
 - The DP Builder will add their files (prompt.md, dockerfile, tests.py, etc.) to the same directory
 
-- `task_id` is int number starting from $0$ to the length of dataset. 
+- `i` is int number for task id
 
 ## Draft Specification File Format
 Draft specification files should be markdown files (.md) containing the structured specification format shown above. Ensure all required fields are included and properly formatted.
@@ -272,7 +260,7 @@ Draft specification files should be markdown files (.md) containing the structur
 
 ## Communication with DP Builder Agent
 Remember that the DP Builder Agent will:
-- Look for your draft specification at `shared_workspace/data_points/{task_id}/draft_spec.md`
+- Look for your draft specification at `shared_workspace/data_points/task_{i:03d}/draft_spec.md`
 - Create actual implementation details (Dockerfile, tests, etc.) in the same directory
 - Validate the technical feasibility
 - Need all context about what core skills to preserve

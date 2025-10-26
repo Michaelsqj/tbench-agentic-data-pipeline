@@ -1,9 +1,4 @@
 #!/usr/bin/env python3
-"""
-Returns refinement guidelines for selecting the best ideas from brainstormed list.
-This tool provides criteria and guidance for the idea agent to refine their
-brainstormed ideas down to the final n selections.
-"""
 
 REFINEMENT_GUIDELINES = """# Idea Refinement Guidelines
 

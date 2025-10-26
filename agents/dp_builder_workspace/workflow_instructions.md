@@ -3,27 +3,35 @@
 ## IMPORTANT: Shared Workspace Approach
 This pipeline uses a **shared workspace** system where both DP Builder and Review agents work on the same files:
 
-1. **Working Directory** (for running Python scripts):
+1. **Shared Workspace** (where you create ALL your files):
    ```bash
-   cd /Users/danaustin/Documents/Projects/terminal_bench_training/workings/ds/data_generation_pipeline
-   ```
-
-2. **Shared Workspace** (where you create ALL your files):
-   ```bash
-   shared_workspace/data_points/draft_{task_id}/
+   shared_workspace/data_points/task_{i:03d}/
+   ├── tests/
+       ├── run-uv-pytest.sh
+       ├── test_outputs.py
+   ├── run-tests.sh
+   ├── raw_data.txt      # The raw data from online sources
    ├── draft_spec.md      # Already created by Idea Agent
    ├── prompt.md          # Create these files directly here
-   ├── dockerfile         
-   ├── tests.py          
+   ├── docker-compose.yaml
+   ├── Dockerfile         
+   ├── task.yaml
+   ├── solution.yaml
    ├── weights.json      
    └── files/            # Additional files go in this subdirectory
        ├── app.py
        └── config.json
    ```
 
+2. File explaination
+
+  1. `task.yaml`
+
+  2. 
+
 **Key Points:**
-- The Idea Agent's draft specification is already at `shared_workspace/data_points/draft_{task_id}/draft_spec.md`
-- Create your implementation files DIRECTLY in the same `shared_workspace/data_points/draft_{task_id}/` directory
+- The Idea Agent's draft specification is already at `shared_workspace/data_points/task_{i:03d}/draft_spec.md`
+- Create your implementation files DIRECTLY in the same `shared_workspace/data_points/task_{i:03d}/` directory
 - The Review Agent will edit your files in place (no copying needed)
 
 ## Context
@@ -61,16 +69,17 @@ The main CLI interface for interacting with the task management system:
 ```bash
 # Available Tools
 
-## get_data.py
 The interface to load dataset and display the ith web-scraped data with Q&A pairs.
 
 `title`, `question_text`, `answer_text` are the main components of each data in dataset.
 
-`task_id` is int number starting from $0$ to the length of dataset.
+```
 
 ```bash
 # Get data i from state/dataset.json
-python get_data.py -i <task_id>
+
+cat shared_workspace/data_points/task_{i:03d}/raw_data.txt
+
 ```
 
 # Using Additional Files with Shared Workspace (REQUIRED)
@@ -87,7 +96,7 @@ The data pipeline uses a shared workspace approach where both DP Builder and Rev
 
 When you create a datapoint, files are stored in a shared workspace at:
 ```
-shared_workspace/data_points/draft_{task_id}/
+shared_workspace/data_points/task_{i:03d}/
 ├── prompt.md          # Your prompt file
 ├── dockerfile         # Your Dockerfile
 ├── tests.py          # Your test file
@@ -103,7 +112,7 @@ shared_workspace/data_points/draft_{task_id}/
 ## Creating and Managing Additional Files
 
 1. **Files are automatically managed** when you run create_dp.py:
-   - The workspace directory is created at `shared_workspace/data_points/draft_{task_id}/`
+   - The workspace directory is created at `shared_workspace/data_points/task_{i:03d}/`
    - Your files are copied to the workspace
    - Additional files go in the `files/` subdirectory
    - Changes are synced to the CSV automatically
@@ -127,11 +136,11 @@ shared_workspace/data_points/draft_{task_id}/
 3. **To edit files after creation**, work directly in the shared workspace:
    ```bash
    # Edit a file directly
-   vim shared_workspace/data_points/draft_001_a/files/app.py
+   vim shared_workspace/data_points/task_{i:03d}/files/app.py
    
    # Then sync changes back to CSV
    python shared_tools/patch_additional_files.py \
-       --task-id draft_001_a \
+       --task-id task_{i:03d} \
        --csv-path agents/dp_builder_workspace/staging/datapoints.csv \
        --mode sync
    ```
@@ -148,18 +157,15 @@ shared_workspace/data_points/draft_{task_id}/
 
 Follow these steps for each draft datapoint you process:
 
-## Step 1: Get Next Draft Task
-First, make sure you're in the correct directory:
-
-Then get your next task:
+## Step 1: Get Draft for task i
 ```bash
-python get_data.py -i <task_id>
+cat shared_workspace/data_points/task_{i:03d}/raw_data.txt
 ```
 
 ## Step 2: Load and Analyze Draft Specification
 ```bash
 # Read the draft specification from shared workspace
-cat shared_workspace/data_points/draft_{task_id}/draft_spec.md
+cat shared_workspace/data_points/task_{i:03d}/draft_spec.md
 ```
 
 Read and analyze the draft specification, understanding:
@@ -192,11 +198,11 @@ Reject the draft immediately if:
 If rejecting:
 ```bash
 # Create a rejection reason file in the shared workspace
-mkdir -p shared_workspace/data_points/draft_001_a
-echo "{\"rejection_reason\": \"[1-2 sentence explanation]\"}" > shared_workspace/data_points/draft_001_a/rejection.json
+mkdir -p shared_workspace/data_points/task_{i:03d}
+echo "{\"rejection_reason\": \"[1-2 sentence explanation]\"}" > shared_workspace/data_points/task_{i:03d}/rejection.json
 
 # Complete the task as rejected with the reason artifact
-python data_pipeline.py complete draft_001_a --status rejected --artifact shared_workspace/data_points/draft_001_a/rejection.json
+python data_pipeline.py complete task_{i:03d} --status rejected --artifact shared_workspace/data_points/task_{i:03d}/rejection.json
 ```
 
 ## Step 4: Planning the Implementation
@@ -255,15 +261,15 @@ Create the component files directly in the shared workspace. **This is where you
 
 ```bash
 # First, manually create the shared workspace structure for this task
-mkdir -p shared_workspace/data_points/draft_{task_id}/files
+mkdir -p shared_workspace/data_points/task_{i:03d}/files
 ```
 
 Now create your files directly in this workspace:
-- `shared_workspace/data_points/draft_{task_id}/prompt.md`
-- `shared_workspace/data_points/draft_{task_id}/dockerfile`
-- `shared_workspace/data_points/draft_{task_id}/tests.py`
-- `shared_workspace/data_points/draft_{task_id}/weights.json`
-- Any additional files in: `shared_workspace/data_points/draft_{task_id}/files/`
+- `shared_workspace/data_points/task_{i:03d}/prompt.md`
+- `shared_workspace/data_points/task_{i:03d}/dockerfile`
+- `shared_workspace/data_points/task_{i:03d}/tests.py`
+- `shared_workspace/data_points/task_{i:03d}/weights.json`
+- Any additional files in: `shared_workspace/data_points/task_{i:03d}/files/`
 
 Key principles when building:
 - If the draft has 5+ complex tests, simplify to 1-2 clear ones
@@ -280,7 +286,7 @@ Key principles when building:
 - Think: The user just hit a problem and is asking for help RIGHT NOW
 
 ### Write the Prompt
-Create `shared_workspace/data_points/draft_001_a/prompt.md`:
+Create `shared_workspace/data_points/task_{i:03d}/prompt.md`:
 - **Concise like a real dev request** (1-3 sentences typical)
 - Clear, actionable instructions without fluff
 - **Include specific requirements**: "Fix the auth to handle 500 concurrent users", "Add caching with 80% hit rate", etc.
@@ -294,7 +300,7 @@ Example good prompts:
 - "Convert this CSV processor to handle JSON too, keeping the same performance (<2s for 10MB files)."
 
 ### Write the Dockerfile
-Create `shared_workspace/data_points/draft_001_a/dockerfile`:
+Create `shared_workspace/data_points/task_{i:03d}/dockerfile`:
 - **Start with t-bench base images**:
   - `FROM ghcr.io/laude-institute/t-bench/ubuntu-24-04:latest` (general tasks)
   - `FROM ghcr.io/laude-institute/t-bench/python-3-13:20250620` (Python tasks)
@@ -302,7 +308,7 @@ Create `shared_workspace/data_points/draft_001_a/dockerfile`:
 - All dependencies installed
 - **ALWAYS use additional files with COPY commands**:
   - DO NOT write inline files using heredoc syntax (cat << EOF)
-  - Create all files in `agents/dp_builder_workspace/drafts/draft_001_a/files/`
+  - Create all files in `agents/dp_builder_workspace/drafts/task_{i:03d}/files/`
   - Use COPY commands to copy them into the container
   - This keeps Dockerfiles clean and maintainable
 - **Create a realistic work environment**:
@@ -315,7 +321,7 @@ Create `shared_workspace/data_points/draft_001_a/dockerfile`:
 - Only include normal code comments that would exist in real files
 
 ### Write the Test Functions
-Create `shared_workspace/data_points/draft_001_a/tests.py`:
+Create `shared_workspace/data_points/task_{i:03d}/tests.py`:
 
 **CRITICAL: Your test file MUST be pytest-compatible!**
 - **pytest must be able to discover and run your tests**: Running `pytest tests.py` should collect and execute all test functions
@@ -361,7 +367,7 @@ def test_database_initialized():
 ```
 
 ### Write the Test Weights
-Create `shared_workspace/data_points/draft_001_a/weights.json`:
+Create `shared_workspace/data_points/task_{i:03d}/weights.json`:
 ```json
 {
     "test_function_1": 0.4,
@@ -483,7 +489,7 @@ Remember: Work from the main pipeline directory but create files in the shared w
 │   └── validators.py                            (validation logic)
 ├── shared_workspace/                             (shared between all agents)
 │   └── data_points/                             (all datapoint workspaces)
-│       ├── draft_001_a/                         (workspace for this task)
+│       ├── task_{i:03d}/                         (workspace for this task)
 │       │   ├── prompt.md                        (your prompt file)
 │       │   ├── dockerfile                       (your Dockerfile)
 │       │   ├── tests.py                         (your test file)
@@ -495,7 +501,7 @@ Remember: Work from the main pipeline directory but create files in the shared w
 │       │   │       └── dataset.csv
 │       │   ├── .history/                        (change tracking)
 │       │   └── rejection.json                   (if rejected - contains reason)
-│       └── draft_001_b/
+│       └── task_{i:03d}/
 │           └── ... (same structure)
 ├── agents/
 │   ├── dp_builder_workspace/                     (your agent workspace)
@@ -555,7 +561,7 @@ Add to review             └─────────────────
 
 2. **For rejected datapoints**: You must manually complete the task using:
    ```bash
-   python data_pipeline.py complete draft_001_a --status rejected --artifact agents/dp_builder_workspace/drafts/draft_001_a/rejection.json
+   python data_pipeline.py complete task_{i:03d} --status rejected --artifact agents/dp_builder_workspace/drafts/task_{i:03d}/rejection.json
    ```
 
 After processing a draft datapoint, state:
