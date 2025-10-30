@@ -1,0 +1,19 @@
+question_text: <p>How can I shut down or reboot Ubuntu using terminal commands?</p>
+
+
+answer_text: <p>For shutdown:</p>
+<pre><code>sudo poweroff
+</code></pre>
+<p>For restart:</p>
+<pre><code>sudo reboot
+</code></pre>
+<p>Appendix:
+If your keyboard is &quot;locked up&quot;, so you can't enter a command like &quot;reboot&quot; which would run from &quot;su&quot; anyway, use the keyboard: hold down <kbd>Alt</kbd> + <kbd>PrintScreen/SysRq</kbd>, buttons and type &quot;REISUB&quot;.  It doesn't have to be capital letters.  It will restart your computer gently.  <a href="http://blog.kember.net/articles/reisub-the-gentle-linux-restart/" rel="noreferrer">http://blog.kember.net/articles/reisub-the-gentle-linux-restart/</a></p>
+
+
+link: https://askubuntu.com/questions/187071/how-do-i-shut-down-or-reboot-from-a-terminal
+
+title: How do I shut down or reboot from a terminal?
+
+question_id: 187071
+

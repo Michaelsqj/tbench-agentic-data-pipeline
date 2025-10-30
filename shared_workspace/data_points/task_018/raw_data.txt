@@ -1,0 +1,30 @@
+question_text: <p>When I run <code>sudo</code> the terminal is stuck for a few seconds and then outputs an error message. My terminal looks like this:</p>
+
+<pre><code>ubuntu@(none):~$ sudo true
+sudo: unable to resolve host (none)
+</code></pre>
+
+<p>What can I do to solve it?</p>
+
+
+answer_text: <p>Two things to check (assuming your machine is called <code>my-machine</code>, you can change this as appropriate):</p>
+
+<ol>
+<li><p>That the <code>/etc/hostname</code> file contains just the name of the machine.</p></li>
+<li><p>That <code>/etc/hosts</code> has an entry for <code>localhost</code>. It should have something like:</p>
+
+<pre>
+ 127.0.0.1    localhost.localdomain localhost
+ 127.0.1.1    my-machine
+</pre></li>
+</ol>
+
+<p>If either of these files aren't correct (since you can't sudo), you may have to reboot the machine into recovery mode and make the modifications, then reboot to your usual environment.</p>
+
+
+link: https://askubuntu.com/questions/59458/error-message-sudo-unable-to-resolve-host-none
+
+title: Error message &quot;sudo: unable to resolve host (none)&quot;
+
+question_id: 59458
+

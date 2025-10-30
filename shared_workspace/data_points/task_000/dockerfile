@@ -1,0 +1,14 @@
+FROM ghcr.io/laude-institute/t-bench/ubuntu-24-04:latest
+
+WORKDIR /root
+
+# Install some additional packages to make this realistic
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    vim \
+    python3 \
+    python3-pip \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*

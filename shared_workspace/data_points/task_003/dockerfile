@@ -1,0 +1,12 @@
+FROM ghcr.io/laude-institute/t-bench/ubuntu-24-04:latest
+
+WORKDIR /root
+
+# Install software-properties-common to have add-apt-repository available
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy PPA list files to sources.list.d
+COPY graphics-drivers-ppa.list /etc/apt/sources.list.d/graphics-drivers-ppa.list
+COPY libreoffice-ppa.list /etc/apt/sources.list.d/libreoffice-ppa.list

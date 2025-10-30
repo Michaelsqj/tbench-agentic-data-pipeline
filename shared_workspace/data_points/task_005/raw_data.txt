@@ -1,0 +1,29 @@
+question_text: <p>How do I save the output of a command to a file?</p>
+
+<p>Is there a way without using any software? I would like to know how.</p>
+
+
+answer_text: <p>Yes it is possible, just redirect the output (AKA <a href="https://en.wikipedia.org/wiki/Standard_streams#Standard_input_(stdin)" rel="noreferrer"><code>stdout</code></a>) to a file:</p>
+<pre><code>SomeCommand &gt; SomeFile.txt  
+</code></pre>
+<p>Or if you want to append data:</p>
+<pre><code>SomeCommand &gt;&gt; SomeFile.txt
+</code></pre>
+<p>If you want <a href="https://en.wikipedia.org/wiki/Standard_streams#Standard_error_.28stderr.29" rel="noreferrer"><code>stderr</code></a> as well use this:</p>
+<pre><code>SomeCommand &amp;&gt; SomeFile.txt  
+</code></pre>
+<p>or this to append:</p>
+<pre><code>SomeCommand &amp;&gt;&gt; SomeFile.txt  
+</code></pre>
+<p>if you want to have both <a href="https://en.wikipedia.org/wiki/Standard_streams#Standard_error_.28stderr.29" rel="noreferrer"><code>stderr</code></a> and output <em>displayed on the console <strong>and</strong> in a file</em> use this:</p>
+<pre><code>SomeCommand 2&gt;&amp;1 | tee SomeFile.txt
+</code></pre>
+<p>(If you want the output only, drop the <code>2</code> above)</p>
+
+
+link: https://askubuntu.com/questions/420981/how-do-i-save-terminal-output-to-a-file
+
+title: How do I save terminal output to a file?
+
+question_id: 420981
+

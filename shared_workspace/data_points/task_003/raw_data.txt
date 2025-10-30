@@ -1,0 +1,34 @@
+question_text: <p>I've added many PPAs using the <code>add-apt-repository</code> command. Is there a simple way to remove these PPAs? I've checked in <code>/etc/apt/sources.list</code> for the appropriate deb lines but they aren't there. </p>
+
+<p>This is on a server system so a command line solution would be great!</p>
+
+
+answer_text: <p>There are a number of options:</p>
+<ol>
+<li><p>Use the <code>--remove</code> flag, similar to how the PPA was added:</p>
+<pre><code>sudo add-apt-repository --remove ppa:whatever/ppa
+</code></pre>
+</li>
+<li><p>You can also remove PPAs by deleting the <code>.list</code> files from <code>/etc/apt/sources.list.d</code> directory.</p>
+</li>
+<li><p>As a safer alternative, you can install ppa-purge:</p>
+<pre><code>sudo apt-get install ppa-purge
+</code></pre>
+<p>And then remove the PPA, downgrading gracefully packages it provided to packages provided by official repositories:</p>
+<pre><code>sudo ppa-purge ppa:whatever/ppa
+</code></pre>
+<p>Note that this will uninstall packages provided by the PPA, but not those provided by the official repositories. If you want to remove them, you should tell it to apt:</p>
+<pre><code>sudo apt-get purge package_name
+</code></pre>
+</li>
+<li><p>Last but not least, you can also disable or remove PPAs from the &quot;Software Sources&quot; section in Ubuntu Settings with a few clicks of your mouse (no terminal needed).</p>
+</li>
+</ol>
+
+
+link: https://askubuntu.com/questions/307/how-can-ppas-be-removed
+
+title: How can PPAs be removed?
+
+question_id: 307
+

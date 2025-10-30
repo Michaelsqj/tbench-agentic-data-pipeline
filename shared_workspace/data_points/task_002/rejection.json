@@ -1,0 +1,3 @@
+{
+    "rejection_reason": "Cannot create realistic 'kept back' package scenario in Docker without custom PPAs or packages, which would be fragile and exceed build time limits. Requires complex repository manipulation that's not reliably reproducible."
+}

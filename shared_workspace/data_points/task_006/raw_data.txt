@@ -1,0 +1,33 @@
+question_text: <p>I received a huge .tar.gz file from a client that contains about 800 mb of image files (when uncompressed.) Our hosting company's ftp is seriously slow, so extracting all the files locally and sending them up via ftp isn't practical. I was able to ftp the .tar.gz file to our hosting site, but when I ssh into my directory and try using unzip, it gives me this error:</p>
+
+<pre><code>[esthers@clients locations]$ unzip community_images.tar.gz
+Archive:  community_images.tar.gz
+  End-of-central-directory signature not found.  Either this file is not a zipfile, or it constitutes one disk of a multi-part archive.  In the latter case the central directory and zipfile comment will be found on the last disk(s) of this archive.
+note:  community_images.tar.gz may be a plain executable, not an archive
+unzip:  cannot find zipfile directory in one of community_images.tar.gz or community_images.tar.gz.zip, and cannot find community_images.tar.gz.ZIP, period.
+</code></pre>
+
+<p>What command do I need to use to extract all the files in a .tar.gz file?</p>
+
+
+answer_text: <p>Type <code>man tar</code> for more information, but this command should do the trick:</p>
+<pre><code>tar -xvzf community_images.tar.gz
+</code></pre>
+<p>To explain a little further, <code>tar</code> collected all the files into one package, <code>community_images.tar</code>. The gzip program applied compression, hence the <code>gz</code> extension. So the command does a couple things:</p>
+<ul>
+<li><code>f</code>: this must be the last flag of the command, and the tar <strong>f</strong>ile must be immediately after. It tells tar the name and path of the compressed file.</li>
+<li><code>z</code>: tells tar to decompress the archive using g<strong>z</strong>ip</li>
+<li><code>x</code>: tar can collect files or e<strong>x</strong>tract them. <code>x</code> does the latter.</li>
+<li><code>v</code>: makes tar talk a lot. <strong>V</strong>erbose output shows you all the files being extracted.</li>
+</ul>
+<p>To extract into a <strong>c</strong>ustom folder, add the <code>-C</code> option with a folder name of your choice:</p>
+<pre><code>tar -xvzf community_images.tar.gz -C some_custom_folder_name
+</code></pre>
+
+
+link: https://askubuntu.com/questions/25347/what-command-do-i-need-to-unzip-extract-a-tar-gz-file
+
+title: What command do I need to unzip/extract a .tar.gz file?
+
+question_id: 25347
+

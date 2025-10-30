@@ -1,0 +1,5 @@
+{
+    "test_data_archive_extracted_to_directory": 0.4,
+    "test_backup_extracted_to_current_directory": 0.3,
+    "test_unzip_utility_installed": 0.3
+}

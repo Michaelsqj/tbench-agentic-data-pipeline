@@ -1,0 +1,29 @@
+question_text: <p>How do I update a single package? As far as <code>man apt-get</code> says <code>apt-get upgrade</code> doesn't take a package/list of packages as parameter:</p>
+
+<blockquote>
+  <p><strong>upgrade</strong></p>
+  
+  <p>upgrade is used to install the newest versions of all packages
+  currently installed on the system from the sources enumerated in
+  <code>/etc/apt/sources.list</code>. Packages currently installed with new
+  versions available are retrieved and upgraded; under no circumstances
+  are currently installed packages removed, or packages not already
+  installed retrieved and installed. New versions of currently installed
+  packages that cannot be upgraded without changing the install status
+  of another package will be left at their current version. An update
+  must be performed first so that apt-get knows that new versions of
+  packages are available.</p>
+</blockquote>
+
+
+answer_text: <p>You just need to do <code>apt-get install --only-upgrade &lt;packagename&gt;</code>. This will upgrade only that single package, and only if it is installed.</p>
+
+<p>If you wish to install the package if it doesn't exist, or upgrade it if it does, you may leave out <code>--only-upgrade</code>.</p>
+
+
+link: https://askubuntu.com/questions/44122/how-to-upgrade-a-single-package-using-apt-get
+
+title: How to upgrade a single package using apt-get?
+
+question_id: 44122
+

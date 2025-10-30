@@ -1,0 +1,20 @@
+question_text: <p>Just downloaded a .zip file from the internet. I want to use the terminal to unzip the file. What is the correct way to do this?</p>
+
+
+answer_text: <p>If the <code>unzip</code> command isn't already installed on your system (use <code>which unzip</code> to check), then run:</p>
+<pre><code>sudo apt-get install unzip
+</code></pre>
+<p>After installing the unzip utility, if you want to extract to a particular destination folder, you can use:</p>
+<pre><code>unzip file.zip -d destination_folder
+</code></pre>
+<p>If you want to extract to a directory with the same name as the zip in your current working directory, you can simply do:</p>
+<pre><code>unzip file.zip
+</code></pre>
+
+
+link: https://askubuntu.com/questions/86849/how-to-unzip-a-zip-file-from-the-terminal
+
+title: How to unzip a zip file from the Terminal?
+
+question_id: 86849
+

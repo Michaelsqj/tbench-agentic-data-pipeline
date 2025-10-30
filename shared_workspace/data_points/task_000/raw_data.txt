@@ -1,0 +1,32 @@
+question_text: <p>I'd like to output a list of all installed packages into a text file so that I can review it and bulk-install on another system.  How would I do this?</p>
+
+
+answer_text: <h1>Ubuntu 14.04 and above</h1>
+<p>The <code>apt</code> tool on Ubuntu 14.04 and above makes this very easy.</p>
+<pre><code>apt list --installed
+</code></pre>
+<hr />
+<h1>Older Versions</h1>
+<p>To get a list of packages installed locally do this in your terminal:</p>
+
+<pre class="lang-bash prettyprint-override"><code>dpkg --get-selections | grep -v deinstall
+</code></pre>
+<p><sup>(The <code>-v</code> tag &quot;inverts&quot; grep to return non-matching lines)</sup></p>
+<p>To get a list of a specific package installed:</p>
+<pre class="lang-bash prettyprint-override"><code>dpkg --get-selections | grep postgres
+</code></pre>
+<p>To save that list to a text file called <code>packages</code> on your desktop do this in your terminal:</p>
+<pre class="lang-bash prettyprint-override"><code>dpkg --get-selections | grep -v deinstall &gt; ~/Desktop/packages
+</code></pre>
+<p>Alternatively, simply use</p>
+<pre class="lang-bash prettyprint-override"><code>dpkg -l
+</code></pre>
+<p><em>(you don't need to run any of these commands as the superuser, so no <code>sudo</code> or any other variants necessary here)</em></p>
+
+
+link: https://askubuntu.com/questions/17823/how-to-list-all-installed-packages
+
+title: How to list all installed packages
+
+question_id: 17823
+

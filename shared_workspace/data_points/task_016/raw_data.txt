@@ -1,0 +1,19 @@
+question_text: <p>I thought <code>tar archive.tar /users/mylocation</code> would work, but it doesn't. How can I do that? </p>
+
+
+answer_text: <p>To extract an archive to a directory different from the current, use the <code>-C</code>, or <code>--directory</code>, tar option, as in</p>
+
+<pre><code>tar -xf archive.tar -C /target/directory
+</code></pre>
+
+<p>Note that the target directory has to exist before running that command (it can be created by <code>mkdir /target/directory</code>).</p>
+
+<p>Read the <a href="http://manpages.ubuntu.com/tar.1">manual page</a> (command: <code>man tar</code>) for other options.</p>
+
+
+link: https://askubuntu.com/questions/45349/how-to-extract-files-to-another-directory-using-tar-command
+
+title: How to extract files to another directory using &#39;tar&#39; command?
+
+question_id: 45349
+

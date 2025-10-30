@@ -1,0 +1,21 @@
+question_text: <p>I'm used to extracting tarballs with a <code>-xfz</code> flag, which handles gzip and bzip2 archives.</p>
+
+<p>Recently I've run into a <code>.tar.xz</code> file and I would like to uncompress it in one step using <code>tar</code>, how can I do that?</p>
+
+
+answer_text: <p>Ubuntu includes GNU tar, which recognizes the format by itself! One command works with any supported compression method, per <a href="http://www.gnu.org/software/tar/manual/tar.html#SEC131" rel="noreferrer">the manual</a>.</p>
+<pre class="lang-bash prettyprint-override"><code># The same command handles any compression format! Ex:
+
+tar xf archive.tar.xz  # for .tar.xz files
+tar xf archive.tar.gz  # for .tar.gz files
+tar xf archive.tar     # for .tar files
+</code></pre>
+<p>etc. If tar gives a <code>Cannot exec</code> error, you may need to <code>sudo apt install xz-utils</code> first.</p>
+
+
+link: https://askubuntu.com/questions/92328/how-do-i-uncompress-a-tarball-that-uses-xz
+
+title: How do I uncompress a tarball that uses .xz?
+
+question_id: 92328
+

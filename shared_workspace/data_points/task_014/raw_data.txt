@@ -1,0 +1,38 @@
+question_text: <p>After I add a user using <code>adduser</code>, I can't see it via <strong>System > Administration > Users and Groups</strong> unless I log out and then log in again. Is that normal?</p>
+
+<p>Also, can I set a newly added user as a <code>sudo</code>er or do I have to change that only after adding it? How can I do that via the shell?</p>
+
+<p>Finally, can I delete the original user that was created upon initial installation of Ubuntu, or is this user somehow 'special'?</p>
+
+
+answer_text: <p>Just <a href="https://help.ubuntu.com/community/RootSudo#Allowing_other_users_to_run_sudo">add the user to the <code>sudo</code> group</a>:</p>
+
+<pre><code>sudo adduser &lt;username&gt; sudo
+</code></pre>
+
+<p>The change will take effect the next time the user logs in.</p>
+
+<p>This works because <code>/etc/sudoers</code> is pre-configured to grant permissions to all members of this group (You should not have to make any changes to this):</p>
+
+<pre><code># Allow members of group sudo to execute any command
+%sudo   ALL=(ALL:ALL) ALL
+</code></pre>
+
+<p>As long as you have access to a user that is in the same groups as your "original" user, you can delete the old one.</p>
+
+<hr>
+
+<p>Realistically, there are also other groups your new user should be a member of. If you set the Account type of a user to Administrator in Users Settings, it will be placed in at least all of these groups:</p>
+
+<pre><code>adm sudo lpadmin sambashare
+</code></pre>
+
+<p>Because your system configuration may vary, I suggest taking a look at the output of <code>groups &lt;username&gt;</code> to see what groups are normally in use.</p>
+
+
+link: https://askubuntu.com/questions/7477/how-can-i-add-a-user-as-a-new-sudoer-using-the-command-line
+
+title: How can I add a user as a new sudoer using the command line?
+
+question_id: 7477
+

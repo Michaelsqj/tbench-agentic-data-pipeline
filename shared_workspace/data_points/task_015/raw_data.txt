@@ -1,0 +1,36 @@
+question_text: <p>How do I add a directory to the <code>$PATH</code> in Ubuntu and make the changes permanent? </p>
+
+
+answer_text: <h1>Using ~/.profile to set $PATH</h1>
+
+<p>A path set in <code>.bash_profile</code> will only be set in a bash login shell (<code>bash -l</code>).
+If you put your path in <code>.profile</code> it will be available to your complete desktop session. That means even metacity will use it.</p>
+
+<p>For example <code>~/.profile</code>:</p>
+
+<pre><code>if [ -d "$HOME/bin" ] ; then
+  PATH="$PATH:$HOME/bin"
+fi
+</code></pre>
+
+<p>Btw, you can check the PATH variable of a process by looking at its environment in <code>/proc/[pid]/environ</code> (replace [pid] with the number from <code>ps axf</code>). E.g. use <code>grep -z "^PATH" /proc/[pid]/environ</code></p>
+
+<h2>Note:</h2>
+
+<p><code>bash</code> as a login shell doesn't parse <code>.profile</code> if either <code>.bash_profile</code> or <code>.bash_login</code> exists. From <code>man bash</code> :</p>
+
+<blockquote>
+  <p>it looks for ~/.bash_profile, ~/.bash_login, and ~/.profile, in that
+  order, and reads and executes commands from the first one that exists
+  and is  readable.</p>
+</blockquote>
+
+<p>See the <a href="https://askubuntu.com/a/226947">answers below</a> for information about <code>.pam_environment</code>, or <code>.bashrc</code> for interactive non-login shells, or set the value globally for all users by putting a script into <code>/etc/profile.d/</code> or use <code>/etc/X11/Xsession.d/</code> to affect the display managers session.</p>
+
+
+link: https://askubuntu.com/questions/60218/how-to-add-a-directory-to-the-path
+
+title: How to add a directory to the PATH?
+
+question_id: 60218
+
